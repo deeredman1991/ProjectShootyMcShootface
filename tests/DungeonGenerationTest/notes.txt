@@ -1,0 +1,16 @@
+Ideas:
+	- Monty Hall:
+		A room with connections on the east and west called the "Monty Hall" ran by an NPC named "Monty"
+		You can win 1 item or 1 of 2 "zonks". A zonk may be an enemy spawn or a common valueless item.
+		There are 3 buttons one representing the item and 2 representing the zonks. When you press a button
+		you will be shown one of the two outcomes that you did not choose. You can then switch to another
+		button or stick with your choice where you will then be awarded the item or the zonk and the buttons are disabled.
+		
+	- Casino:
+		A room with 4 coin slots that represent coin flips HH, TT, HT, TH.
+		You pay 5 coins to play. The game flips 2 coins. If you lose you get nothing.
+		If you win you get 21 coins because you have a 1 in 4 chance of winning: 20 coins is break even and 21 is a slight profit.
+		Machines break after 1 win or a maximum of 3(?) plays.
+		
+	- Challenge Floor / Lost Floor
+		A Lost Woods/Lost Cave style floor that gives the player a hint as to which direction to go and resets the floor upon taking a wrong turn.
