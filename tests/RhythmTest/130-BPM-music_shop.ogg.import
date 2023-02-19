@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/130-BPM-music_shop.ogg-6e191971df7e9bde4fddbb99e2171a33.oggstr"
+
+[deps]
+
+source_file="res://130-BPM-music_shop.ogg"
+dest_files=[ "res://.import/130-BPM-music_shop.ogg-6e191971df7e9bde4fddbb99e2171a33.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=2.0

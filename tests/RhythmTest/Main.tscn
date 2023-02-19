@@ -45,6 +45,9 @@ stream = ExtResource( 3 )
 
 [node name="MusicPlayer2" type="AudioStreamPlayer" parent="."]
 
+[node name="MusicTimer" type="Timer" parent="."]
+one_shot = true
+
 [node name="Blip" type="Sprite" parent="."]
 visible = false
 position = Vector2( 499, 295 )
