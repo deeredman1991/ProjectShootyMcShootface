@@ -12,4 +12,4 @@ dest_files=[ "res://.import/130-BPM-music_loop_offset_test.ogg-fb7b8f7df9ecca2b6
 [params]
 
 loop=false
-loop_offset=2.0
+loop_offset=1.0

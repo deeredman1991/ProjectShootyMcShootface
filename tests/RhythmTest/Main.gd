@@ -30,6 +30,7 @@ var time_until_next_beat := seconds_per_beat
 var beat_product := 0.0
 
 var music := {
+	"intro": preload("res://130-BPM-music_intro.ogg"),
 	"combat": preload("res://130-BPM-music_loop_offset_test.ogg"),
 	"boss": preload("res://130-BPM-music_loop_offset_test2.ogg")
 }
@@ -87,27 +88,29 @@ func _initialize_music() -> void:
 	for song in music.values():
 		song.loop_offset *= seconds_per_measure
 
-func _play_helper(music_player1, music_player2, music_file) -> void:
+func _play_music_helper(music_player1, music_player2, music_file) -> void:
+	var time_until_end_of_current_loop := 0.0
 	if music_player2.stream:
-		if music_player2.stream == music_file:
-			return
 		music_player2.stream.set_loop(false)
+		if music_player2.stream == music_file:
+			if music_player2.playing: # Not exactly sure why this branch is necessary but you can't enqueue the same loop twice without it.
+				queued_music.insert(0, music_file)
+			return
+		time_until_end_of_current_loop = music_player2.stream.get_length() - (music_player2.get_playback_position() + \
+				AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency())
 
-	# No idea why I need to /2 here but it works... Expect future bugs...
-	if not music_player2.playing or music_player2.stream.get_length() - (music_player2.get_playback_position() + \
-				AudioServer.get_time_since_last_mix() - AudioServer.get_output_latency()) < seconds_per_measure / 2:
+	if not music_player2.playing or time_until_end_of_current_loop < seconds_per_measure / 2:
 		music_player1.stream = music_file
 		music_player1.stream.set_loop(true)
 		music_player1.play( beat_player_position_in_seconds - seconds_per_measure )
-		
 	else:
 		queued_music.insert(0, music_file)
 
 func _play_music(music_file) -> void:
 	if not $MusicPlayer.playing:
-		_play_helper($MusicPlayer, $MusicPlayer2, music_file)
+		_play_music_helper($MusicPlayer, $MusicPlayer2, music_file)
 	else:
-		_play_helper($MusicPlayer2, $MusicPlayer, music_file)
+		_play_music_helper($MusicPlayer2, $MusicPlayer, music_file)
 
 func _ready() -> void:
 	_initialize_music()
@@ -131,21 +134,28 @@ func is_on_beat( timing_tolerance := 0.09 ) -> bool:
 
 func play_music(music_file) -> void:
 	queued_music.append(music_file)
+	
+func stop_music() -> void:
+	if $MusicPlayer.stream:
+		$MusicPlayer.stream.set_loop(false)
+	if $MusicPlayer2.stream:
+		$MusicPlayer2.stream.set_loop(false)
+
 
 
 # USAGE
 func _input(event: InputEvent) -> void:
 	var key = event as InputEventKey
 	if key and key.is_pressed() and key.get_scancode() == KEY_1:
+		play_music( music.intro )
 		play_music( music.combat )
 	if key and key.is_pressed() and key.get_scancode() == KEY_2:
 		play_music( music.boss )
-		
+	if key and key.is_pressed() and key.get_scancode() == KEY_3:
+		play_music( music.combat )
+
 	if key and key.is_pressed() and key.get_scancode() == KEY_0:
-		if $MusicPlayer.stream:
-			$MusicPlayer.stream.set_loop(false)
-		if $MusicPlayer2.stream:
-			$MusicPlayer2.stream.set_loop(false)
+		stop_music()
 
 	var mouse_button = event as InputEventMouseButton
 	if mouse_button and mouse_button.pressed and mouse_button.button_index == 1:
