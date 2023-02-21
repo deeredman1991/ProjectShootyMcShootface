@@ -20,6 +20,8 @@ SceneManager="*res://main/singletons/SceneManager.gd"
 helpers="*res://main/singletons/helpers.gd"
 LevelManager="*res://main/singletons/LevelManager.gd"
 LevelGenerator="*res://main/singletons/LevelGenerator.gd"
+OptionsManager="*res://main/singletons/OptionsManager.gd"
+GameManager="*res://main/singletons/GameManager.gd"
 
 [display]
 
