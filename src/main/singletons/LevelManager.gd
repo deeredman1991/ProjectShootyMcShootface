@@ -30,10 +30,6 @@ var DIRECTIONS = {
 	WEST  = Vector2(-1,  0)
 }
 
-var level_min_size = 7
-var level_max_size = 20
-var minimum_number_of_dead_ends = 5
-
 onready var level_rng = RandomNumberGenerator.new()
 
 var level = {}
@@ -54,6 +50,11 @@ func get_seed() -> String:
 func get_random_direction():
 	return DIRECTIONS[ DIRECTIONS.keys()[ level_rng.randi() % DIRECTIONS.size() ] ]
 
+func generate_level(level_min_size, level_max_size, minimum_number_of_dead_ends, lv_seed = ""):
+	set_seed(lv_seed)
+	level = LevelGenerator.generate(level_min_size, level_max_size, minimum_number_of_dead_ends)
+	return level
+
 func _ready() -> void:
 	#Fixed
 	#set_seed("2637391100") #Seed for testing Boss Room Placement
@@ -62,7 +63,8 @@ func _ready() -> void:
 	#Unfixed
 	#set_seed("3376728561") #Boss Room Generates "out of bounds"
 	#set_seed("1569505562") #All special rooms Generate next to the start room
-	
+	var level_min_size = 7
+	var level_max_size = 20
+	var minimum_number_of_dead_ends = 5
 
-	set_seed()
-	level = LevelGenerator.generate(level_min_size, level_max_size, minimum_number_of_dead_ends)
+	generate_level(level_min_size, level_max_size, minimum_number_of_dead_ends)

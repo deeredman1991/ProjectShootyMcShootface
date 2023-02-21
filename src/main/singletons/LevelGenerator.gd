@@ -3,8 +3,6 @@ extends Node
 
 var room_scene = preload( "res://main/scenes/game/room/Room.tscn" )
 
-var generation_chance = 20
-
 func generate( min_number_rooms, max_number_rooms, minimum_num_dead_ends ):
 	var size = LevelManager.level_rng.randi_range( min_number_rooms, max_number_rooms-1 )
 	
@@ -17,7 +15,7 @@ func generate( min_number_rooms, max_number_rooms, minimum_num_dead_ends ):
 
 		while( len(level) < size ):
 			for current_room_pos in level.keys():
-				if LevelManager.level_rng.randi_range(0, 100) < generation_chance:
+				if LevelManager.level_rng.randi_range(1, len(level)) == 1:
 					var new_room_direction = LevelManager.get_random_direction()
 					var new_room_pos = current_room_pos + new_room_direction
 
@@ -40,7 +38,6 @@ func get_shortest_path_BFS(start_room_pos, end_room_pos, level):
 
 		for neighbor_dir in room.get_neighbors():
 			var neighbor_pos = room_pos + neighbor_dir
-			var neighbor = level[neighbor_pos]
 			if neighbor_pos in visited: #Nodes get validated/invalidated here.
 				continue
 			parents[neighbor_pos] = room_pos
@@ -51,9 +48,9 @@ func get_shortest_path_BFS(start_room_pos, end_room_pos, level):
 				break
 
 	var path = [end_room_pos]
-	
+
 	assert( end_room_pos in parents ) # There should always be a path to every dead end.
-	
+
 	var current_node = parents[end_room_pos]
 	while current_node != null:
 		path.insert(0, current_node)
