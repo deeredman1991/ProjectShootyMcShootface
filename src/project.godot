@@ -18,6 +18,8 @@ config/icon="res://icon.png"
 
 SceneManager="*res://main/singletons/SceneManager.gd"
 helpers="*res://main/singletons/helpers.gd"
+LevelManager="*res://main/singletons/LevelManager.gd"
+LevelGenerator="*res://main/singletons/LevelGenerator.gd"
 
 [display]
 
