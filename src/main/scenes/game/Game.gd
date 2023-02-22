@@ -1,4 +1,4 @@
-extends Node
+extends Node2D
 
 
 var level_sizes = [
@@ -23,3 +23,8 @@ func generate_level( size ):
 
 func _ready() -> void:
 	generate_level( 0 )
+		
+	for room_pos in LevelManager.level:
+		var room = LevelManager.level[room_pos]
+		room.build_room()
+		add_child(room)

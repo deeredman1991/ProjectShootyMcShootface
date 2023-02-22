@@ -38,6 +38,6 @@ func get_seed() -> String:
 func get_random_direction():
 	return DIRECTIONS[ DIRECTIONS.keys()[ level_rng.randi() % DIRECTIONS.size() ] ]
 
-func generate_level(level_min_size, level_max_size, minimum_number_of_dead_ends, lv_seed = ""):
+func generate_level(level_min_size, level_max_size, minimum_number_of_dead_ends):
 	level = LevelGenerator.generate(level_min_size, level_max_size, minimum_number_of_dead_ends)
 	return level

@@ -5,25 +5,31 @@ var room_scene = preload( "res://main/scenes/game/room/Room.tscn" )
 
 func generate( min_number_rooms, max_number_rooms, minimum_num_dead_ends ):
 	var size = LevelManager.level_rng.randi_range( min_number_rooms, max_number_rooms-1 )
-	
+
 	var level = {}
 	while !is_valid(level, minimum_num_dead_ends):
 		level = {}
 		var first_room = room_scene.instance()
+		var first_room_pos = Vector2.ZERO
 		first_room.room_type = LevelManager.ROOM_TYPES.START
-		level[ Vector2.ZERO ] = first_room
+		level[ first_room_pos ] = first_room
+		first_room.room_rect.position = first_room_pos
 
 		while( len(level) < size ):
 			for current_room_pos in level.keys():
-				if LevelManager.level_rng.randi_range(1, len(level)) == 1:
+				var room_generation_chance = LevelManager.level_rng.randi_range(1, len(level))
+				if room_generation_chance == 1:
 					var new_room_direction = LevelManager.get_random_direction()
 					var new_room_pos = current_room_pos + new_room_direction
 
 					if !level.has(new_room_pos):
-						level[new_room_pos] = room_scene.instance()
+						var new_room = room_scene.instance()
+						new_room.room_rect.position = new_room_pos
+
+						level[new_room_pos] = new_room
 					if level[current_room_pos].neighbors[new_room_direction] == null:
 						connect_rooms( level[current_room_pos], level[new_room_pos], new_room_direction )
-	
+
 	place_special_rooms(level)
 	return level
 
