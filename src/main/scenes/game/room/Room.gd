@@ -2,10 +2,11 @@ extends Node2D
 
 
 var room_assets = {
-	"wall": preload( "res://main/scenes/game/room/wall/Wall.tscn" )
+	"wall": preload( "res://main/scenes/game/room/wall/Wall.tscn" ),
+	"door": preload( "res://main/scenes/game/room/door/Door.tscn" )
 }
 
-export var room_rect = Rect2( Vector2.ZERO, Vector2(15, 9) )
+export var room_rect = Rect2( Vector2.ZERO, Vector2( 15, 9 ) )
 
 var room_type = LevelManager.ROOM_TYPES.DEFAULT
 
@@ -38,19 +39,25 @@ func is_dead_end():
 	
 func build_room():
 	var room_pos = room_rect.position
-	var room_width = room_rect.size.x
-	var room_height = room_rect.size.y
-
-	print('oi!')
+	var room_width = room_rect.size.x # 15
+	var room_height = room_rect.size.y # 9
 
 	var room_offset = Vector2( floor(room_width/2), floor(room_height/2) )
 
 	for y in range(-room_offset.y, floor(room_height)/2+1):
 		for x in range(-room_offset.x, floor(room_width)/2+1):
 			if y == -room_offset.y or x == -room_offset.x or y == room_offset.y or x == room_offset.x:
-				var new_wall = room_assets.wall.instance()
-				new_wall.position = Vector2( 
-					(x * OptionsManager.tile_size.x) + room_pos.x * room_width * OptionsManager.tile_size.x, 
-					(y * OptionsManager.tile_size.y) + room_pos.y * room_height * OptionsManager.tile_size.y
-				)
-				add_child(new_wall)
+				if (y == 0 or x == 0) and neighbors[ Vector2(x, y).normalized() ]:
+					var new_door = room_assets.door.instance()
+					new_door.position = Vector2( 
+						(x * OptionsManager.tile_size.x) + room_pos.x * room_width * OptionsManager.tile_size.x, 
+						(y * OptionsManager.tile_size.y) + room_pos.y * room_height * OptionsManager.tile_size.y
+					)
+					add_child(new_door)
+				else:
+					var new_wall = room_assets.wall.instance()
+					new_wall.position = Vector2( 
+						(x * OptionsManager.tile_size.x) + room_pos.x * room_width * OptionsManager.tile_size.x, 
+						(y * OptionsManager.tile_size.y) + room_pos.y * room_height * OptionsManager.tile_size.y
+					)
+					add_child(new_wall)
