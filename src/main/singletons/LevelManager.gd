@@ -11,18 +11,11 @@ enum ROOM_TYPES {
 	MINIBOSS
 }
 
-var DIRECTIONS = {
-	NORTH = Vector2( 0, -1),
-	EAST  = Vector2( 1,  0),
-	SOUTH = Vector2( 0,  1),
-	WEST  = Vector2(-1,  0)
-}
-
 onready var level_rng = RandomNumberGenerator.new()
-
 var level = {}
-
 var level_seed setget set_seed, get_seed
+
+var room_size = Vector2( 15, 9 )
 
 func set_seed(value: String = "") -> void:
 	OptionsManager.level_seed = value
@@ -35,8 +28,8 @@ func set_seed(value: String = "") -> void:
 func get_seed() -> String:
 	return OptionsManager.level_seed
 
-func get_random_direction():
-	return DIRECTIONS[ DIRECTIONS.keys()[ level_rng.randi() % DIRECTIONS.size() ] ]
+func get_random_cardinal_direction():
+	return 
 
 func generate_level(level_min_size, level_max_size, minimum_number_of_dead_ends):
 	level = LevelGenerator.generate(level_min_size, level_max_size, minimum_number_of_dead_ends)

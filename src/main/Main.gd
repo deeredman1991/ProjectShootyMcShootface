@@ -13,10 +13,10 @@ export(int) var speed = 16
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_up"):
-		camera.position += Vector2.UP * speed
+		camera.position += Vector2.UP * speed * LevelManager.room_size.y / 2
 	if event.is_action_pressed("ui_down"):
-		camera.position += Vector2.DOWN * speed
+		camera.position += Vector2.DOWN * speed * LevelManager.room_size.y / 2
 	if event.is_action_pressed("ui_left"):
-		camera.position += Vector2.LEFT * speed
+		camera.position += Vector2.LEFT * speed * LevelManager.room_size.x / 2
 	if event.is_action_pressed("ui_right"):
-		camera.position += Vector2.RIGHT * speed
+		camera.position += Vector2.RIGHT * speed * LevelManager.room_size.x / 2

@@ -15,16 +15,20 @@ var level_sizes = [
 ]
 
 func generate_level( size ):
-	LevelManager.generate_level( 
+	return LevelManager.generate_level( 
 			level_sizes[size].level_min_size, 
 			level_sizes[size].level_max_size, 
 			level_sizes[size].minimum_number_of_dead_ends
 	)
-
-func _ready() -> void:
-	generate_level( 0 )
-		
-	for room_pos in LevelManager.level:
-		var room = LevelManager.level[room_pos]
+	
+func build_rooms(level):
+	for room_pos in level:
+		var room = level[room_pos]
 		room.build_room()
 		add_child(room)
+
+func _ready() -> void:
+	var level = generate_level( 0 )
+	build_rooms( level )
+		
+	

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://main/Main.gd" type="Script" id=1]
+[ext_resource path="res://main/scenes/game/entities/player/Player.tscn" type="PackedScene" id=2]
 
 [node name="Main" type="Node2D"]
 script = ExtResource( 1 )
@@ -9,3 +10,6 @@ camera_path = NodePath("Camera2D")
 [node name="Camera2D" type="Camera2D" parent="."]
 offset = Vector2( 8, 8 )
 current = true
+
+[node name="Player" parent="." instance=ExtResource( 2 )]
+collision_mask = 114

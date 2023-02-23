@@ -6,15 +6,15 @@ var room_assets = {
 	"door": preload( "res://main/scenes/game/room/door/Door.tscn" )
 }
 
-export var room_rect = Rect2( Vector2.ZERO, Vector2( 15, 9 ) )
+var room_rect = Rect2( Vector2.ZERO, LevelManager.room_size )
 
 var room_type = LevelManager.ROOM_TYPES.DEFAULT
 
 var neighbors = {
-	LevelManager.DIRECTIONS.NORTH: null,
-	LevelManager.DIRECTIONS.EAST:  null,
-	LevelManager.DIRECTIONS.SOUTH: null,
-	LevelManager.DIRECTIONS.WEST:  null
+	Vector2.UP: null,
+	Vector2.DOWN: null,
+	Vector2.LEFT:  null,
+	Vector2.RIGHT:  null
 }
 
 func get_neighbors():
@@ -36,11 +36,11 @@ func get_num_neighbors():
 
 func is_dead_end():
 	return get_num_neighbors() == 1
-	
+
 func build_room():
 	var room_pos = room_rect.position
-	var room_width = room_rect.size.x # 15
-	var room_height = room_rect.size.y # 9
+	var room_width = room_rect.size.x
+	var room_height = room_rect.size.y
 
 	var room_offset = Vector2( floor(room_width/2), floor(room_height/2) )
 
@@ -49,6 +49,8 @@ func build_room():
 			if y == -room_offset.y or x == -room_offset.x or y == room_offset.y or x == room_offset.x:
 				if (y == 0 or x == 0) and neighbors[ Vector2(x, y).normalized() ]:
 					var new_door = room_assets.door.instance()
+					new_door.room = self
+					new_door.direction = Vector2(x, y).normalized()
 					new_door.position = Vector2( 
 						(x * OptionsManager.tile_size.x) + room_pos.x * room_width * OptionsManager.tile_size.x, 
 						(y * OptionsManager.tile_size.y) + room_pos.y * room_height * OptionsManager.tile_size.y

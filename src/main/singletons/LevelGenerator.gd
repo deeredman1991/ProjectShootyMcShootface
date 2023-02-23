@@ -19,7 +19,8 @@ func generate( min_number_rooms, max_number_rooms, minimum_num_dead_ends ):
 			for current_room_pos in level.keys():
 				var room_generation_chance = LevelManager.level_rng.randi_range(1, len(level))
 				if room_generation_chance == 1:
-					var new_room_direction = LevelManager.get_random_direction()
+					var random_cardinal_direction = _get_random_cardinal_direction()
+					var new_room_direction = random_cardinal_direction
 					var new_room_pos = current_room_pos + new_room_direction
 
 					if !level.has(new_room_pos):
@@ -32,6 +33,12 @@ func generate( min_number_rooms, max_number_rooms, minimum_num_dead_ends ):
 
 	place_special_rooms(level)
 	return level
+
+func _get_random_cardinal_direction():
+	return [ Vector2.UP, 
+			 Vector2.DOWN, 
+			 Vector2.LEFT, 
+			 Vector2.RIGHT ] [ LevelManager.level_rng.randi() % 4 ]
 
 func get_shortest_path_BFS(start_room_pos, end_room_pos, level):
 	var frontier = [start_room_pos] # Priority Queues get created here.
