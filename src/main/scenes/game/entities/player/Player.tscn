@@ -2,8 +2,9 @@
 
 [ext_resource path="res://main/scenes/game/entities/player/Player.gd" type="Script" id=1]
 
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 4, 2 )
+[sub_resource type="CapsuleShape2D" id=1]
+radius = 2.0
+height = 4.0
 
 [node name="Player" type="KinematicBody2D"]
 collision_mask = 112
@@ -18,4 +19,5 @@ color = Color( 0.0588235, 0.627451, 0.372549, 1 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 8, 13 )
+rotation = 1.5708
 shape = SubResource( 1 )
