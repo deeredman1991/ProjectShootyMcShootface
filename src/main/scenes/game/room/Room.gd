@@ -17,6 +17,8 @@ var neighbors = {
 	Vector2.RIGHT:  null
 }
 
+var doors = []
+
 func get_neighbors():
 	var valid_neighbors = {}
 
@@ -37,6 +39,14 @@ func get_num_neighbors():
 func is_dead_end():
 	return get_num_neighbors() == 1
 
+func open_doors():
+	for door in doors:
+		door.open_door()
+
+func close_doors():
+	for door in doors:
+		door.close_door()
+
 func build_room():
 	var room_pos = room_rect.position
 	var room_width = room_rect.size.x
@@ -49,6 +59,7 @@ func build_room():
 			if y == -room_offset.y or x == -room_offset.x or y == room_offset.y or x == room_offset.x:
 				if (y == 0 or x == 0) and neighbors[ Vector2(x, y).normalized() ]:
 					var new_door = room_assets.door.instance()
+					doors.append(new_door)
 					new_door.room = self
 					new_door.direction = Vector2(x, y).normalized()
 					new_door.position = Vector2( 

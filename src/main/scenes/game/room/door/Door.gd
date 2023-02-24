@@ -5,17 +5,14 @@ var room = null
 var direction = null
 
 func open_door():
-	set_collision_layer_bit( GameManager.COLLISION_LAYERS.WalkingObstacle, false )
-	set_collision_layer_bit( GameManager.COLLISION_LAYERS.FlyingObstacle, false )
-	set_collision_mask_bit( GameManager.COLLISION_LAYERS.Player, false )
+	set_collision_mask_bit( GameManager.COLLISION_LAYERS.Walking, false )
+	set_collision_mask_bit( GameManager.COLLISION_LAYERS.Flying, false )
 
 func close_door():
-	set_collision_layer_bit( GameManager.COLLISION_LAYERS.WalkingObstacle, true )
-	set_collision_layer_bit( GameManager.COLLISION_LAYERS.FlyingObstacle, true )
-	set_collision_mask_bit( GameManager.COLLISION_LAYERS.Player, true )
+	set_collision_mask_bit( GameManager.COLLISION_LAYERS.Walking, true )
+	set_collision_mask_bit( GameManager.COLLISION_LAYERS.Flying, true )
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
+func _ready():
 	open_door()
 
 func _on_Area2D_body_shape_entered(_body_rid: RID, body: Node, _body_shape_index: int, _local_shape_index: int) -> void:

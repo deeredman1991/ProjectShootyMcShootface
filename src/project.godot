@@ -81,13 +81,10 @@ JP_move_down={
 
 [layer_names]
 
-2d_physics/layer_1="Player"
-2d_physics/layer_2="Enemy"
+2d_physics/layer_1="Walking"
+2d_physics/layer_2="Flying"
 2d_physics/layer_3="Hitbox"
 2d_physics/layer_4="Hurtbox"
-2d_physics/layer_5="WalkingObstacle"
-2d_physics/layer_6="FlyingObstacle"
-2d_physics/layer_7="Door"
 
 [physics]
 
