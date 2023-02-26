@@ -30,19 +30,19 @@ func _physics_process(_delta: float) -> void:
  
 	# Get target position
 	var target_position := calculate_target_position(current_room_center, current_room_size)
- 
-	# Interpolate(lerp) camera position to target position by the smoothing
-	position = lerp(position, target_position, smoothing)
- 
- 
+
+	if smoothing:
+		# Interpolate(lerp) camera position to target position by the smoothing
+		position = lerp(position, target_position, smoothing)
+	else:
+		position = target_position
  
 func calculate_target_position(room_center: Vector2, room_size: Vector2) -> Vector2:
 	# The distance from the center of the room to the camera boundary on one side.
 	# When the room is the same size as the screen the x and y margin are zero
 	var x_margin: float = (room_size.x - zoom_view_size.x) / 2
 	var y_margin: float = (room_size.y - zoom_view_size.y) / 2
- 
- 
+
 	var return_position: Vector2 = Vector2.ZERO
  
 	# if the zoom_view_size >= room_size the camera position should just be room center

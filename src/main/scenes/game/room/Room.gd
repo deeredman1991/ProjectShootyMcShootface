@@ -49,11 +49,27 @@ func close_doors():
 
 func build_room():
 	var room_pos = room_rect.position
-	var room_width = room_rect.size.x
-	var room_height = room_rect.size.y
+	var room_size = room_rect.size
+	var room_width = room_size.x
+	var room_height = room_size.y
 
 	var room_offset = Vector2( floor(room_width/2), floor(room_height/2) )
+	
+	self.position = room_pos
 
+	# Set the Camera Trigger's position and size
+	self.get_node("CameraTrigger").set_position( 
+		Vector2( 
+			room_pos.x * OptionsManager.tile_size.x * room_width,
+			room_pos.y * OptionsManager.tile_size.y * room_height
+		)
+	)
+	self.get_node("CameraTrigger/CollisionShape2D").shape.set_extents( Vector2( 
+		(room_offset.x + 0.5) * OptionsManager.tile_size.x,
+		(room_offset.y + 0.5) * OptionsManager.tile_size.y
+	) )	
+
+	#Generate Room
 	for y in range(-room_offset.y, floor(room_height)/2+1):
 		for x in range(-room_offset.x, floor(room_width)/2+1):
 			if y == -room_offset.y or x == -room_offset.x or y == room_offset.y or x == room_offset.x:

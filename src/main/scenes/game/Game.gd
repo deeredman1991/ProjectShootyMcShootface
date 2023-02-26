@@ -1,6 +1,14 @@
 extends YSort
 
 
+var is_paused := false setget set_paused, get_paused
+
+func set_paused(value: bool) -> void:
+	is_paused = value
+
+func get_paused() -> bool:
+	return is_paused
+
 var level_sizes = [
 	{
 		"level_min_size": 7,
@@ -20,7 +28,7 @@ func generate_level( size ):
 			level_sizes[size].level_max_size, 
 			level_sizes[size].minimum_number_of_dead_ends
 	)
-	
+
 func build_rooms(level):
 	for room_pos in level:
 		var room = level[room_pos]
@@ -28,6 +36,8 @@ func build_rooms(level):
 		add_child(room)
 
 func _ready() -> void:
+	GameManager.Game = self
+	
 	var level = generate_level( 0 )
 	build_rooms( level )
 		

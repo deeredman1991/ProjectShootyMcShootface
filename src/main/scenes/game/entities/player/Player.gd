@@ -9,6 +9,8 @@ var velocity = Vector2.ZERO
 
 var flying := false setget set_flying, get_flying
 
+var current_room = null
+
 func set_flying(value: bool) -> void:
 	set_collision_layer_bit( GameManager.COLLISION_LAYERS.Flying, value )
 	set_collision_layer_bit( GameManager.COLLISION_LAYERS.Walking, not value )
@@ -53,3 +55,27 @@ func _handle_movement(delta: float) -> void:
 		velocity = velocity.move_toward( Vector2.ZERO, friction * delta )
 
 	velocity = move_and_slide( velocity )
+
+func _ready() -> void:
+	GameManager.player = self
+
+func _on_RoomDetector_area_entered(area: Area2D) -> void:
+	# Gets collision shape and size of room
+	var collision_shape: CollisionShape2D = area.get_node("CollisionShape2D")
+	var size: Vector2 = collision_shape.shape.extents * 2
+ 
+	var target_room = area.get_parent() as YSort
+
+	var plain_rooms = [
+		LevelManager.ROOM_TYPES.DEFAULT,
+		LevelManager.ROOM_TYPES.START
+	]
+
+	var do_fade = false
+	if  ( target_room and not target_room.room_type in plain_rooms ) or \
+		( current_room and not current_room.room_type in plain_rooms ):
+		do_fade = true
+
+	# Changes camera's current room and size. check camera script for more info
+	GameManager.change_room( collision_shape.global_position, size, do_fade )
+	current_room = target_room

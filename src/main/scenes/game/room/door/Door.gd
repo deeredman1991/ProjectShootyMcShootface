@@ -15,5 +15,5 @@ func close_door():
 func _ready():
 	open_door()
 
-func _on_Area2D_body_shape_entered(_body_rid: RID, body: Node, _body_shape_index: int, _local_shape_index: int) -> void:
+func _on_DoorTrigger_body_shape_entered(_body_rid: RID, body: Node, _body_shape_index: int, _local_shape_index: int) -> void:
 	body.position = self.position + self.direction * OptionsManager.tile_size * 2
