@@ -5,6 +5,7 @@ export var follow_smoothing: float = 0.1
  
 # The amount of smoothing used by the code
 var smoothing: float
+var camera_smoothing_enabled := true
  
 var target_position: Vector2
 var current_room_center: Vector2
@@ -32,7 +33,7 @@ func _physics_process(_delta: float) -> void:
 	# Get target position
 	target_position = calculate_target_position(current_room_center, current_room_size)
 
-	if smoothing_enabled:
+	if camera_smoothing_enabled:
 		# Interpolate(lerp) camera position to target position by the smoothing
 		position = lerp(position, target_position, smoothing)
 	else:

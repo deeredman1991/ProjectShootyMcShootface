@@ -50,7 +50,7 @@ func change_room(room_position: Vector2, room_size: Vector2, fade := false, fade
 
 		yield( get_tree().create_timer( camera_effects_animation_player.get_animation("fade_out").length  + fade_time ),"timeout" )
 
-		player_camera.smoothing_enabled = false
+		player_camera.camera_smoothing_enabled = false
 		player_camera.current_room_center = room_position
 		player_camera.current_room_size = room_size
 
@@ -60,7 +60,7 @@ func change_room(room_position: Vector2, room_size: Vector2, fade := false, fade
 		yield( get_tree().create_timer( camera_effects_animation_player.get_animation("fade_in").length ),"timeout" )
 
 	else:
-		player_camera.smoothing_enabled = true
+		player_camera.camera_smoothing_enabled = true
 		player_camera.current_room_center = room_position
 		player_camera.current_room_size = room_size
 
