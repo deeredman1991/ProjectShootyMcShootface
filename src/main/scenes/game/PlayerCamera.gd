@@ -27,6 +27,7 @@ func _ready() -> void:
  
  
 func _physics_process(_delta: float) -> void:
+	assert( smoothing_enabled == false, "Camera Script replaces default smoothing, did you mean 'camera_smoothing_enabled'" )
 	# Get view size considering camera zoom
 	zoom_view_size = view_size * zoom
  

@@ -35,7 +35,7 @@ func _ready() -> void:
 	camera_effects_animation_player.play("RESET")
 	camera_effects_component.show()
 
-func change_room(room_position: Vector2, room_size: Vector2, fade := false, fade_time := 0.2) -> void:
+func change_camera_room(room_position: Vector2, room_size: Vector2, fade := false, fade_time := 0.2) -> void:
 	room_position = room_position - OptionsManager.tile_size/2
 
 	var player_camera = Game.get_node("PlayerCamera")
@@ -69,6 +69,6 @@ func change_room(room_position: Vector2, room_size: Vector2, fade := false, fade
 		while true:
 			yield(get_tree().create_timer( 0.01 ),"timeout")
 
-			if player_camera.get_camera_screen_center().distance_to( player_camera.target_position ) < (OptionsManager.tile_size.x + OptionsManager.tile_size.y):
+			if player_camera.get_camera_screen_center().distance_to( player_camera.target_position ) < (OS.window_size.x + OS.window_size.y) / 20:
 				self.game_is_paused = false
 				break

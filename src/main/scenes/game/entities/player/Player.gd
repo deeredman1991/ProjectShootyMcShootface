@@ -77,5 +77,5 @@ func _on_RoomDetector_area_entered(area: Area2D) -> void:
 		do_fade = true
 
 	# Changes camera's current room and size. check camera script for more info
-	GameManager.change_room( collision_shape.global_position, size, do_fade )
+	GameManager.change_camera_room( collision_shape.global_position, size, do_fade )
 	current_room = target_room
