@@ -37,7 +37,6 @@ func build_rooms(level):
 
 func _ready() -> void:
 	GameManager.Game = self
-	
 	var level = generate_level( 0 )
 	build_rooms( level )
 		

@@ -29,7 +29,7 @@ func get_seed() -> String:
 	return OptionsManager.level_seed
 
 func get_random_cardinal_direction():
-	return 
+	return
 
 func generate_level(level_min_size, level_max_size, minimum_number_of_dead_ends):
 	level = LevelGenerator.generate(level_min_size, level_max_size, minimum_number_of_dead_ends)

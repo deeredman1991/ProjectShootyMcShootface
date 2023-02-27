@@ -12,4 +12,5 @@ var tile_size = Vector2(16, 16)
 func _ready() -> void:
 	if level_seed == "":
 		print( "[Options Manager] Set Random Seed" )
+		#seed: 1308298547 - Boss Room Generates Far Away
 		LevelManager.set_seed()
