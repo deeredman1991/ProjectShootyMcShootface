@@ -21,14 +21,13 @@ enum COLLISION_LAYERS {
 	RoomDetection
 }
 
-
 onready var player : KinematicBody2D = null
 
 export var pause_time: float = 0.2
 
 func _ready() -> void:
 	yield(get_tree().create_timer(0.01), "timeout")
-
+	player = Game.get_node("Player")
 	var player_camera = Game.get_node("PlayerCamera")
 	var camera_effects_component = player_camera.get_node("TransitionEffectsComponent")
 	var camera_effects_animation_player = camera_effects_component.get_node("AnimationPlayer")
@@ -39,33 +38,37 @@ func _ready() -> void:
 func change_room(room_position: Vector2, room_size: Vector2, fade := false, fade_time := 0.2) -> void:
 	room_position = room_position - OptionsManager.tile_size/2
 
-	Game.get_node("Player").velocity = Vector2.ZERO
- 
+	var player_camera = Game.get_node("PlayerCamera")
+	
+	player.velocity = Vector2.ZERO
+
 	if fade == true:
-		var player_camera = Game.get_node("PlayerCamera")
 		var camera_effects_component = player_camera.get_node("TransitionEffectsComponent")
 		var camera_effects_animation_player = camera_effects_component.get_node("AnimationPlayer")
-		#var camera_smoothing = player_camera.smoothing
 
 		camera_effects_animation_player.play("fade_out")
 
-		yield( get_tree().create_timer( camera_effects_animation_player.get_animation("fade_out").length ),"timeout" )
+		yield( get_tree().create_timer( camera_effects_animation_player.get_animation("fade_out").length  + fade_time ),"timeout" )
 
 		player_camera.smoothing_enabled = false
 		player_camera.current_room_center = room_position
 		player_camera.current_room_size = room_size
 
-		yield( get_tree().create_timer( camera_effects_animation_player.get_animation("fade_in").length + fade_time ),"timeout" )
-
 		if camera_effects_animation_player.assigned_animation == "fade_out":
 			camera_effects_animation_player.play("fade_in")
 
-		player_camera.smoothing_enabled = true
+		yield( get_tree().create_timer( camera_effects_animation_player.get_animation("fade_in").length ),"timeout" )
 
 	else:
-		Game.get_node("PlayerCamera").current_room_center = room_position
-		Game.get_node("PlayerCamera").current_room_size = room_size
+		player_camera.smoothing_enabled = true
+		player_camera.current_room_center = room_position
+		player_camera.current_room_size = room_size
 
 		self.game_is_paused = true
-		yield(get_tree().create_timer( pause_time ),"timeout")
-		self.game_is_paused = false
+		
+		while true:
+			yield(get_tree().create_timer( 0.01 ),"timeout")
+
+			if player_camera.get_camera_screen_center().distance_to( player_camera.target_position ) < (OptionsManager.tile_size.x + OptionsManager.tile_size.y):
+				self.game_is_paused = false
+				break
