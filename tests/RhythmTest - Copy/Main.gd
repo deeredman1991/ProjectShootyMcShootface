@@ -29,21 +29,47 @@ var time_until_next_beat := seconds_per_beat
 # beat_product is used to measure how "on beat" the current frame is.
 var beat_product := 0.0
 
-var loops := {
-	"silence": preload( "res://130-BPM-silence.ogg" ),
-	"intro": preload( "res://130-BPM-music_intro.ogg" ),
-	"combat": preload( "res://130-BPM-music_combat.ogg" ),
-	"boss": preload( "res://130-BPM-music_boss.ogg" ),
-	"shop": preload( "res://130-BPM-music_shop.ogg" ),
-	"secret_room": preload( "res://130-BPM-music_secret.ogg" ),
-}
-
 var songs := {
-	"test": {
-		"intro": loops.intro,
-		"loops": [ loops.combat, loops.boss ] },
-	"test2": {
-		"loops": [ loops.secret_room, ] }
+	"boss": {
+		"intro": preload( "res://audio/music/boss/intro.ogg" ),
+		"loops": [
+			preload( "res://audio/music/boss/loop_segment0.ogg" ),
+			preload( "res://audio/music/boss/loop_segment1.ogg" )
+		]
+	},
+	"combat": {
+		"intro": preload( "res://audio/music/combat/intro2.ogg" ),
+		"loops": [
+			preload( "res://audio/music/combat/loop_segment0.ogg" ),
+			preload( "res://audio/music/combat/loop_segment1.ogg" ),
+			preload( "res://audio/music/combat/loop_segment2.ogg" ),
+			preload( "res://audio/music/combat/loop_segment3.ogg" )
+		]
+	},
+	"secret_room": {
+		"intro": preload( "res://audio/music/secret_room/intro.ogg" ),
+		"loops": [
+			preload( "res://audio/music/secret_room/loop_segment0.ogg" ),
+			preload( "res://audio/music/secret_room/loop_segment1.ogg" ),
+			preload( "res://audio/music/secret_room/loop_segment2.ogg" )
+		]
+	},
+	"shop": {
+		"intro": preload( "res://audio/music/shop/intro.ogg" ),
+		"loops": [
+			preload( "res://audio/music/shop/loop_segment0.ogg" ),
+			preload( "res://audio/music/shop/loop_segment1.ogg" ),
+			preload( "res://audio/music/shop/loop_segment2.ogg" ),
+			preload( "res://audio/music/shop/loop_segment3.ogg" )
+		]
+	},
+	"treasure_room": {
+		"intro": preload( "res://audio/music/shop/intro.ogg" ),
+		"loops": [
+			preload( "res://audio/music/treasure_room/loop_segment0.ogg" ),
+			preload( "res://audio/music/treasure_room/loop_segment1.ogg" )
+		]
+	},
 }
 
 var current_music_player = null
@@ -100,9 +126,14 @@ func _report_beat() -> void:
 		beat_data["current_measure"] = current_measure
 		emit_signal("measure_change", beat_data)
 
-func _initialize_loops() -> void:
-	for loop in loops.values():
-		loop.loop_offset *= seconds_per_measure
+func _initialize_songs() -> void:
+	for song in songs.values():
+		if "intro" in song:
+			song.intro.loop_offset = (song.intro.loop_offset + 1) * seconds_per_measure
+			song.intro.set_loop(false)
+		for loop in song.loops:
+			loop.loop_offset = (loop.loop_offset + 1) * seconds_per_measure
+			loop.set_loop(false)
 
 func _play_music( loop_stack ) -> void:
 	var time_until_end_of_current_loop := 0
@@ -128,7 +159,7 @@ func _play_music( loop_stack ) -> void:
 		queued_loops.append( loop_stack )
 
 func _ready() -> void:
-	_initialize_loops()
+	_initialize_songs()
 	$BeatPlayer.stream.loop_offset = seconds_per_measure
 	$BeatPlayer.play( seconds_per_measure )
 
@@ -151,7 +182,7 @@ func play_music(song_object) -> void:
 	if "intro" in current_song_object:
 		queued_loops.append( [ song_object.intro, 0 ] )
 	else:
-		queued_loops.append( [ song_object.loops[0], 0 ] )
+		queued_loops.append( [ song_object.loops[0], 1 ] )
 
 func stop_music() -> void:
 	current_song_object = null
@@ -163,9 +194,25 @@ func _input(event: InputEvent) -> void:
 	# Music doesn't play immediately, it waits for the next measure to jump in.
 	if key and key.is_pressed(): 
 		if key.get_scancode() == KEY_1:
-			play_music( songs.test )
+			var new_song = songs.combat.duplicate(true)
+			new_song.intro = preload( "res://audio/music/combat/intro.ogg" )
+			new_song.intro.set_loop(false)
+			play_music( new_song )
 		if key.get_scancode() == KEY_2:
-			play_music( songs.test2 )
+			var new_song = songs.combat.duplicate(true)
+			new_song.erase("intro")
+			play_music( new_song )
+		if key.get_scancode() == KEY_3:
+			play_music( songs.combat )
+
+		if key.get_scancode() == KEY_4:
+			play_music( songs.boss )
+		if key.get_scancode() == KEY_5:
+			play_music( songs.secret_room )
+		if key.get_scancode() == KEY_6:
+			play_music( songs.shop )
+		if key.get_scancode() == KEY_7:
+			play_music( songs.treasure_room )
 
 		if key.get_scancode() == KEY_0:
 			stop_music()
