@@ -29,16 +29,52 @@ var time_until_next_beat := seconds_per_beat
 # beat_product is used to measure how "on beat" the current frame is.
 var beat_product := 0.0
 
-var music := {
-	"silence": preload( "res://130-BPM-silence.ogg" ),
-	"intro": preload( "res://130-BPM-music_intro.ogg" ),
-	"combat": preload( "res://130-BPM-music_combat.ogg" ),
-	"boss": preload( "res://130-BPM-music_boss.ogg" ),
-	"shop": preload( "res://130-BPM-music_shop.ogg" ),
-	"secret_room": preload( "res://130-BPM-music_secret.ogg" ),
+var songs := {
+	"boss": {
+		"intro": preload( "res://audio/music/boss/intro.ogg" ),
+		"loops": [
+			preload( "res://audio/music/boss/loop_segment0.ogg" ),
+			preload( "res://audio/music/boss/loop_segment1.ogg" )
+		]
+	},
+	"combat": {
+		"intro": preload( "res://audio/music/combat/intro2.ogg" ),
+		"loops": [
+			preload( "res://audio/music/combat/loop_segment0.ogg" ),
+			preload( "res://audio/music/combat/loop_segment1.ogg" ),
+			preload( "res://audio/music/combat/loop_segment2.ogg" ),
+			preload( "res://audio/music/combat/loop_segment3.ogg" )
+		]
+	},
+	"secret_room": {
+		"intro": preload( "res://audio/music/secret_room/intro.ogg" ),
+		"loops": [
+			preload( "res://audio/music/secret_room/loop_segment0.ogg" ),
+			preload( "res://audio/music/secret_room/loop_segment1.ogg" ),
+			preload( "res://audio/music/secret_room/loop_segment2.ogg" )
+		]
+	},
+	"shop": {
+		"intro": preload( "res://audio/music/shop/intro.ogg" ),
+		"loops": [
+			preload( "res://audio/music/shop/loop_segment0.ogg" ),
+			preload( "res://audio/music/shop/loop_segment1.ogg" ),
+			preload( "res://audio/music/shop/loop_segment2.ogg" ),
+			preload( "res://audio/music/shop/loop_segment3.ogg" )
+		]
+	},
+	"treasure_room": {
+		"intro": preload( "res://audio/music/shop/intro.ogg" ),
+		"loops": [
+			preload( "res://audio/music/treasure_room/loop_segment0.ogg" ),
+			preload( "res://audio/music/treasure_room/loop_segment1.ogg" )
+		]
+	},
 }
 
-var queued_music = []
+var current_music_player = null
+var current_song_object = null
+var queued_loops = []
 
 func _get_beat_data() -> void:
 	var beat_player_playback_position = $BeatPlayer.get_playback_position()
@@ -90,36 +126,40 @@ func _report_beat() -> void:
 		beat_data["current_measure"] = current_measure
 		emit_signal("measure_change", beat_data)
 
-func _initialize_music() -> void:
-	for song in music.values():
-		song.loop_offset *= seconds_per_measure
+func _initialize_songs() -> void:
+	for song in songs.values():
+		if "intro" in song:
+			song.intro.loop_offset = (song.intro.loop_offset + 1) * seconds_per_measure
+			song.intro.set_loop(false)
+		for loop in song.loops:
+			loop.loop_offset = (loop.loop_offset + 1) * seconds_per_measure
+			loop.set_loop(false)
 
-func _play_music_helper(music_player1, music_player2, music_file) -> void:
-	var time_until_end_of_current_loop := 0.0
-	if music_player2.stream:
-		music_player2.stream.set_loop(false)
-		if music_player2.stream == music_file:
-			if music_player2.playing: # Not exactly sure why this branch is necessary but you can't enqueue the same loop twice without it.
-				queued_music.insert(0, music_file)
-			return
-		time_until_end_of_current_loop = music_player2.stream.get_length() - (music_player2.get_playback_position() + \
+func _play_music( loop_stack ) -> void:
+	var time_until_end_of_current_loop := 0
+
+	if current_music_player:
+		time_until_end_of_current_loop = current_music_player.stream.get_length() - (current_music_player.get_playback_position() + \
 				AudioServer.get_time_since_last_mix())
 
 	if time_until_end_of_current_loop < seconds_per_measure / 2:
-		music_player1.stream = music_file
-		music_player1.stream.set_loop(true)
-		music_player1.play( beat_player_position_in_seconds - seconds_per_measure )
+		var new_stream_player = AudioStreamPlayer.new()
+		new_stream_player.set_stream( loop_stack[0] )
+		queued_loops.append( 
+			[ 
+				current_song_object.loops[ loop_stack[1] ], # Next Song
+				(loop_stack[1] + 1) % current_song_object.loops.size() # Next Next Song Index 
+			] 
+		)
+		add_child( new_stream_player )
+		current_music_player = new_stream_player
+		new_stream_player.play( beat_player_position_in_seconds - seconds_per_measure )
+		new_stream_player.connect("finished", new_stream_player, "queue_free")
 	else:
-		queued_music.insert(0, music_file)
-
-func _play_music(music_file) -> void:
-	if not $MusicPlayer.playing:
-		_play_music_helper($MusicPlayer, $MusicPlayer2, music_file)
-	else:
-		_play_music_helper($MusicPlayer2, $MusicPlayer, music_file)
+		queued_loops.append( loop_stack )
 
 func _ready() -> void:
-	_initialize_music()
+	_initialize_songs()
 	$BeatPlayer.stream.loop_offset = seconds_per_measure
 	$BeatPlayer.play( seconds_per_measure )
 
@@ -129,49 +169,53 @@ func _process(_delta) -> void:
 	if current_beat_count != previous_beat_count:
 		_report_beat()
 
-	if queued_music:
-		_play_music(queued_music.pop_at(0))
-
-#		print("C: %s M: %s B: %s T: %s" % [current_beat_count, current_measure, current_beat_in_audiofile, time_since_last_beat ])
+	if queued_loops:
+		_play_music( queued_loops.pop_at(0) )
 
 func is_on_beat( timing_tolerance := 0.09 ) -> bool:
 	return beat_product <= timing_tolerance
 
-func play_music(music_file) -> void:
-	queued_music.append(music_file)
+func play_music(song_object) -> void:
+	current_song_object = song_object
+	queued_loops = []
+
+	if "intro" in current_song_object:
+		queued_loops.append( [ song_object.intro, 0 ] )
+	else:
+		queued_loops.append( [ song_object.loops[0], 1 ] )
 
 func stop_music() -> void:
-	if $MusicPlayer.stream:
-		$MusicPlayer.stream.set_loop(false)
-	if $MusicPlayer2.stream:
-		$MusicPlayer2.stream.set_loop(false)
-
-
-#BUG! Wont queue transition tracks properly while audio is playing i.e. 4 then 1 will not work and instead sound like 4 then 3
-#		but 4 then 5 then 1 works for some reason... Need to figure out a good way to clear the unused music player's audio stream.
-#		silence track?
-#	  After a closer inspection of this bug, it appears that the transition track is getting queued properly but
-#	    the main track is immediately overwriting and replacing it on the very next frame without giving it a chance to play
-#		for some reason.
+	current_song_object = null
+	queued_loops = []
 
 # USAGE
 func _input(event: InputEvent) -> void:
 	var key = event as InputEventKey
 	# Music doesn't play immediately, it waits for the next measure to jump in.
-	if key and key.is_pressed() and key.get_scancode() == KEY_1:
-		play_music( music.intro )
-		play_music( music.combat )
-	if key and key.is_pressed() and key.get_scancode() == KEY_2:
-		play_music( music.boss )
-	if key and key.is_pressed() and key.get_scancode() == KEY_3:
-		play_music( music.combat )
-	if key and key.is_pressed() and key.get_scancode() == KEY_4:
-		play_music( music.shop )
-	if key and key.is_pressed() and key.get_scancode() == KEY_5:
-		play_music( music.secret_room )
+	if key and key.is_pressed(): 
+		if key.get_scancode() == KEY_1:
+			var new_song = songs.combat.duplicate(true)
+			new_song.intro = preload( "res://audio/music/combat/intro.ogg" )
+			new_song.intro.set_loop(false)
+			play_music( new_song )
+		if key.get_scancode() == KEY_2:
+			var new_song = songs.combat.duplicate(true)
+			new_song.erase("intro")
+			play_music( new_song )
+		if key.get_scancode() == KEY_3:
+			play_music( songs.combat )
 
-	if key and key.is_pressed() and key.get_scancode() == KEY_0:
-		stop_music()
+		if key.get_scancode() == KEY_4:
+			play_music( songs.boss )
+		if key.get_scancode() == KEY_5:
+			play_music( songs.secret_room )
+		if key.get_scancode() == KEY_6:
+			play_music( songs.shop )
+		if key.get_scancode() == KEY_7:
+			play_music( songs.treasure_room )
+
+		if key.get_scancode() == KEY_0:
+			stop_music()
 
 	var mouse_button = event as InputEventMouseButton
 	if mouse_button and mouse_button.pressed and mouse_button.button_index == 1:
