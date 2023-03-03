@@ -17,7 +17,7 @@ var zoom_view_size: Vector2
 var disabled := false
 
 #TODO: Create proper debug utilities
-""" Ctrl + K on this line to enable/disable
+#""" Ctrl + K on this line to enable/disable
 #Debug Camera Code
 func _input(event: InputEvent) -> void:
 	var key = event as InputEventKey
@@ -25,16 +25,16 @@ func _input(event: InputEvent) -> void:
 	if key and key.is_pressed():
 		if key.get_scancode() == KEY_UP:
 			disabled = true
-			position += Vector2.UP * OptionsManager.tile_size.y
+			position += Vector2.UP * OptionsManager.tile_size.y * LevelManager.room_size.y/2
 		if key.get_scancode() == KEY_DOWN:
 			disabled = true
-			position += Vector2.DOWN * OptionsManager.tile_size.y
+			position += Vector2.DOWN * OptionsManager.tile_size.y * LevelManager.room_size.y/2
 		if key.get_scancode() == KEY_LEFT:
 			disabled = true
-			position += Vector2.LEFT * OptionsManager.tile_size.x
+			position += Vector2.LEFT * OptionsManager.tile_size.x * LevelManager.room_size.x/2
 		if key.get_scancode() == KEY_RIGHT:
 			disabled = true
-			position += Vector2.RIGHT * OptionsManager.tile_size.x
+			position += Vector2.RIGHT * OptionsManager.tile_size.x * LevelManager.room_size.x/2
 #"""
 
 func _ready() -> void:
