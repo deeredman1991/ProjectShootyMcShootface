@@ -22,36 +22,11 @@ func get_flying() -> bool:
 func _ready() -> void:
 	GameManager.player = self
 
-# MOUSE BASED MOVEMENT FOR TESTING PURPOSES
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-var speed = 64
-var last_mouse_pos = null
-
-func _input(event):
-	var mouse_event = event as InputEventMouseButton
-	if mouse_event and mouse_event.button_index == 1:
-		last_mouse_pos = get_global_mouse_position() - (OptionsManager.tile_size/2)
-
-
 func _physics_process(delta: float) -> void:
 	if GameManager.game_is_paused:
 		return
 
-	if last_mouse_pos:
-		var direction_vector = ( last_mouse_pos - global_position )
-
-		if direction_vector.length() < 0.5:
-			last_mouse_pos = null
-			return
-		
-		velocity = move_and_slide( direction_vector.normalized() * speed )
-# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-#func _physics_process(delta: float) -> void:
-#	if GameManager.game_is_paused:
-#		return
-#
-#	_handle_movement(delta)
+	_handle_movement(delta)
 
 func _get_input_vector() -> Vector2:
 	var input_vector = Vector2.ZERO

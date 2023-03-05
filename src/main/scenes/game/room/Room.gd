@@ -47,13 +47,57 @@ func close_doors():
 	for door in doors:
 		door.close_door()
 
+func _build_room_tiles(room_half_size, room_pos, room_width, room_height, tilemap) -> void:
+	for y in range(-room_half_size.y, room_half_size.y+1):
+		for x in range(-room_half_size.x, room_half_size.x+1):
+			#If is on the border.
+			if y == -room_half_size.y or x == -room_half_size.x or y == room_half_size.y or x == room_half_size.x:
+				#Add Door
+				if (y == 0 or x == 0) and neighbors[ Vector2(x, y).normalized() ]:
+					var door_pos = Vector2(
+						room_pos.x * room_width + x, 
+						room_pos.y * room_height + y )
+					tilemap.set_cellv( 
+						door_pos,
+						GameManager.TILES.DOOR )
+				else: #Add Wall
+					var wall_pos = Vector2(
+						room_pos.x * room_width + x, 
+						room_pos.y * room_height + y )
+					tilemap.set_cellv( 
+						wall_pos,
+						GameManager.TILES.WALL )
+			else:
+				#Add Foor
+				var floor_pos = Vector2(
+					room_pos.x * room_width + x, 
+					room_pos.y * room_height + y )
+				if tilemap.get_cellv(floor_pos) == tilemap.INVALID_CELL:
+					tilemap.set_cellv( 
+						floor_pos,
+						GameManager.TILES.FLOOR )
+
+func _replace_tiles_with_static_bodies(tilemap, room_pos) -> void:
+	for cellpos in tilemap.get_used_cells():
+		var cell = tilemap.get_cellv(cellpos)
+
+		if cell == GameManager.TILES.DOOR:
+			var new_door = room_assets.door.instance()
+			new_door.position = tilemap.map_to_world(cellpos) * tilemap.scale
+			new_door.room = self
+			doors.append( new_door )
+			add_child(new_door)
+			tilemap.set_cellv( cellpos, GameManager.TILES.FLOOR )
+
 func build_room():
+	var tilemap = GameManager.Game.get_node("TileMap")
+
 	var room_pos = room_rect.position
 	var room_size = room_rect.size
 	var room_width = room_size.x
 	var room_height = room_size.y
 
-	var room_center = Vector2( floor(room_width/2), floor(room_height/2) )
+	var room_half_size = Vector2( floor(room_width/2), floor(room_height/2) )
 
 	# Set the Camera Trigger's position and size
 	self.get_node("CameraTrigger").set_position( 
@@ -63,28 +107,10 @@ func build_room():
 		)
 	)
 	self.get_node("CameraTrigger/CollisionShape2D").shape.set_extents( Vector2( 
-		(room_center.x + 0.5) * OptionsManager.tile_size.x,
-		(room_center.y + 0.5) * OptionsManager.tile_size.y
-	) )	
+		(room_half_size.x + 0.5) * OptionsManager.tile_size.x,
+		(room_half_size.y + 0.5) * OptionsManager.tile_size.y
+	) )
+	
+	_build_room_tiles(room_half_size, room_pos, room_width, room_height, tilemap)
+	_replace_tiles_with_static_bodies(tilemap, room_pos)
 
-	#Generate Room
-	for y in range(-room_center.y, floor(room_height/2)+1):
-		for x in range(-room_center.x, floor(room_width/2)+1):
-			if y == -room_center.y or x == -room_center.x or y == room_center.y or x == room_center.x:
-				if (y == 0 or x == 0) and neighbors[ Vector2(x, y).normalized() ]:
-					var new_door = room_assets.door.instance()
-					doors.append(new_door)
-					new_door.room = self
-					new_door.direction = Vector2(x, y).normalized()
-					new_door.global_position = Vector2( 
-						(x * OptionsManager.tile_size.x) + room_pos.x * room_width * OptionsManager.tile_size.x, 
-						(y * OptionsManager.tile_size.y) + room_pos.y * room_height * OptionsManager.tile_size.y
-					)
-					add_child(new_door)
-				else:
-					var new_wall = room_assets.wall.instance()
-					new_wall.global_position = Vector2( 
-						(x * OptionsManager.tile_size.x) + room_pos.x * room_width * OptionsManager.tile_size.x, 
-						(y * OptionsManager.tile_size.y) + room_pos.y * room_height * OptionsManager.tile_size.y
-					)
-					add_child(new_wall)

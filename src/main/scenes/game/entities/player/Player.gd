@@ -19,6 +19,9 @@ func set_flying(value: bool) -> void:
 func get_flying() -> bool:
 	return flying
 
+func _ready() -> void:
+	GameManager.player = self
+
 func _physics_process(delta: float) -> void:
 	if GameManager.game_is_paused:
 		return
@@ -55,9 +58,6 @@ func _handle_movement(delta: float) -> void:
 		velocity = velocity.move_toward( Vector2.ZERO, friction * delta )
 
 	velocity = move_and_slide( velocity )
-
-func _ready() -> void:
-	GameManager.player = self
 
 func _on_RoomDetector_area_entered(area: Area2D) -> void:
 	# Gets collision shape and size of room

@@ -21,6 +21,14 @@ enum COLLISION_LAYERS {
 	RoomDetection
 }
 
+enum TILES {
+	WALL,
+	DOOR,
+	FLOOR,
+	PIT,
+	SPIKE
+}
+
 var player : KinematicBody2D = null
 var player_camera : Camera2D = null
 
