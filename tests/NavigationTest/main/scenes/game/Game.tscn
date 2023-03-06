@@ -205,9 +205,10 @@ tile_data = PoolIntArray( -65534, 0, 0, 2, 0, 0, 65538, 0, 0 )
 script = ExtResource( 10 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
+position = Vector2( 8, 8 )
 
 [node name="Enemy" parent="." instance=ExtResource( 9 )]
-position = Vector2( 56, 0 )
+position = Vector2( 56, 8 )
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 offset = Vector2( 8, 8 )

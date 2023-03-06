@@ -24,26 +24,41 @@ func _input(event):
 
 var path
 
-func _draw():
-	for point_index in range(path.size()):
-		if point_index - 1 < 0:
-			continue
-		var point = path[point_index]
-		var previous_point = path[point_index - 1]
-		var color = Color( randf(), randf(), randf() )
-		draw_line(previous_point, point, color, 1.0)
+#func _draw():
+#	for point_index in range(path.size()):
+#		if point_index - 1 < 0:
+#			continue
+#		var point = path[point_index]
+#		var previous_point = path[point_index - 1]
+#		var color = Color( randf(), randf(), randf() )
+#
+#		draw_line(to_local(previous_point), to_local(point), color, 1.0)
+
+#	var point_index = 1
+#	if point_index - 1 < 0 or point_index >= path.size():
+#		return
+#	var point = path[point_index]
+#	var previous_point = path[point_index - 1]
+#	var color = Color( randf(), randf(), randf() )
+#	draw_line(previous_point, point, color, 1.0)
+		
+
+func _ready() -> void:
+	path = [(global_position / OptionsManager.tile_size).floor() * OptionsManager.tile_size, (global_position / OptionsManager.tile_size).floor() * OptionsManager.tile_size ]
+	
 
 func _physics_process(_delta: float) -> void:
+	update() # Updates the _draw method
+	
 	if GameManager.game_is_paused:
 		return
 	
-	var start_position: Vector2 = position
-	var end_position: Vector2 = GameManager.player.position
-		
+	var start_position: Vector2 = get_global_transform().origin
+	var end_position: Vector2 = GameManager.player.get_global_transform().origin
 	var exception_units := [self, GameManager.player]
-	path = GameManager.tilemap.get_astar_path_avoiding_obstacles_and_units(start_position, end_position, exception_units)
-	update()
 
+	path = GameManager.tilemap.get_astar_path_avoiding_obstacles_and_units(start_position, end_position, exception_units)
+	
 	var state = "obey"
 	state = "follow"
 	
@@ -53,15 +68,17 @@ func _physics_process(_delta: float) -> void:
 		if GameManager.player:
 			var direction_vector
 			if path.size() > 1:
-				direction_vector = ( path[1] - ((global_position / OptionsManager.tile_size).floor() * OptionsManager.tile_size) )
+				direction_vector = ( ( path[1] + (OptionsManager.tile_size / 2) ) - ( global_position ) )
 			else:
 				direction_vector = Vector2.ZERO
 
 			if direction_vector.length() < follow_distance:
+				
+
 				return
 
 			velocity = move_and_slide( direction_vector.normalized() * speed )
-	else:
+	elif state == "obey":
 		if last_mouse_pos:
 			var direction_vector = ( last_mouse_pos - global_position )
 
