@@ -47,7 +47,7 @@ func close_doors():
 	for door in doors:
 		door.close_door()
 
-func _build_room_tiles(room_half_size, room_pos, room_width, room_height, tilemap) -> void:
+func _place_room_tiles(room_half_size, room_pos, room_width, room_height, tilemap) -> void:
 	for y in range(-room_half_size.y, room_half_size.y+1):
 		for x in range(-room_half_size.x, room_half_size.x+1):
 			#If is on the border.
@@ -77,7 +77,7 @@ func _build_room_tiles(room_half_size, room_pos, room_width, room_height, tilema
 						floor_pos,
 						GameManager.TILES.FLOOR )
 
-func _replace_tiles_with_static_bodies(tilemap, room_pos) -> void:
+func _replace_tiles_with_static_bodies(tilemap) -> void:
 	for cellpos in tilemap.get_used_cells():
 		var cell = tilemap.get_cellv(cellpos)
 
@@ -88,6 +88,26 @@ func _replace_tiles_with_static_bodies(tilemap, room_pos) -> void:
 			doors.append( new_door )
 			add_child(new_door)
 			tilemap.set_cellv( cellpos, GameManager.TILES.FLOOR )
+		elif cell == GameManager.TILES.WALL:
+			var new_wall = room_assets.wall.instance()
+			new_wall.position = tilemap.map_to_world(cellpos) * tilemap.scale
+			add_child(new_wall)
+			tilemap.set_cellv( cellpos, tilemap.INVALID_CELL )
+
+func _set_camera_trigger_position(room_pos, room_width, room_height):
+	# Set the Camera Trigger's position and size
+	self.get_node("CameraTrigger").set_position( 
+		Vector2( 
+			room_pos.x * OptionsManager.tile_size.x * room_width,
+			room_pos.y * OptionsManager.tile_size.y * room_height
+		)
+	)
+
+func _set_camera_trigger_size(room_half_size):
+	self.get_node("CameraTrigger/CollisionShape2D").shape.set_extents( Vector2( 
+		(room_half_size.x + 0.5) * OptionsManager.tile_size.x,
+		(room_half_size.y + 0.5) * OptionsManager.tile_size.y
+	) )
 
 func build_room():
 	var tilemap = GameManager.Game.get_node("TileMap")
@@ -99,18 +119,9 @@ func build_room():
 
 	var room_half_size = Vector2( floor(room_width/2), floor(room_height/2) )
 
-	# Set the Camera Trigger's position and size
-	self.get_node("CameraTrigger").set_position( 
-		Vector2( 
-			room_pos.x * OptionsManager.tile_size.x * room_width,
-			room_pos.y * OptionsManager.tile_size.y * room_height
-		)
-	)
-	self.get_node("CameraTrigger/CollisionShape2D").shape.set_extents( Vector2( 
-		(room_half_size.x + 0.5) * OptionsManager.tile_size.x,
-		(room_half_size.y + 0.5) * OptionsManager.tile_size.y
-	) )
+	_set_camera_trigger_position(room_pos, room_width, room_height)
+	_set_camera_trigger_size(room_half_size)
 	
-	_build_room_tiles(room_half_size, room_pos, room_width, room_height, tilemap)
-	_replace_tiles_with_static_bodies(tilemap, room_pos)
+	_place_room_tiles(room_half_size, room_pos, room_width, room_height, tilemap)
+	_replace_tiles_with_static_bodies(tilemap)
 

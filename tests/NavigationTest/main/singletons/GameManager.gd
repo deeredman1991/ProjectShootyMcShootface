@@ -32,3 +32,4 @@ enum TILES {
 var player : KinematicBody2D = null
 var player_camera : Camera2D = null
 
+var tilemap : TileMap = null

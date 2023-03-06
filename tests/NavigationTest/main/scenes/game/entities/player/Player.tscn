@@ -9,7 +9,7 @@ height = 4.00002
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 4, 6.5 )
 
-[node name="Player" type="KinematicBody2D"]
+[node name="Player" type="KinematicBody2D" groups=["Units"]]
 collision_mask = 0
 script = ExtResource( 1 )
 
