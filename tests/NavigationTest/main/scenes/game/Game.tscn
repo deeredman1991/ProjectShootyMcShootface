@@ -203,6 +203,7 @@ cell_y_sort = true
 format = 1
 tile_data = PoolIntArray( -65534, 0, 0, 2, 0, 0, 65538, 0, 0 )
 script = ExtResource( 10 )
+diagonals = true
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 8, 8 )

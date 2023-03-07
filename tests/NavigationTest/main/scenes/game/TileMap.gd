@@ -24,6 +24,20 @@ func _ready() -> void:
 	
 func snap_vector_to_grid( vector: Vector2 ) -> Vector2:
 	return (vector / OptionsManager.tile_size).floor() * OptionsManager.tile_size
+	
+func center_path_nodes( point_path: Array ) -> Array:
+	var new_point_path := []
+	for point_index in point_path.size():
+		var point = point_path[point_index]
+	
+		new_point_path.append( point + (OptionsManager.tile_size / 2) )
+	return new_point_path
+	
+func replace_path_ends( start_position: Vector2, end_position: Vector2, point_path: Array):
+	var new_point_path := point_path.duplicate()
+	new_point_path[ 0] = start_position
+	new_point_path[-1] = end_position
+	return new_point_path
 
 func update() -> void:
 	create_pathfinding_points()
@@ -76,23 +90,31 @@ func position_has_unit(unit_position: Vector2, ignore_unit_position = null) -> b
 	return false
 
 func get_astar_path_avoiding_obstacles_and_units(start_position: Vector2, end_position: Vector2, exception_units := [], max_distance := -1) -> Array:
-	start_position = snap_vector_to_grid( start_position )
-	end_position = snap_vector_to_grid( end_position )
+	var snapped_start_position = snap_vector_to_grid( start_position )
+	var snapped_end_position = snap_vector_to_grid( end_position )
 	set_obstacles_points_disabled(true)
 	set_unit_points_disabled(true, exception_units)
-	var astar_path := astar.get_point_path(get_point(start_position), get_point(end_position))
+	var astar_path := astar.get_point_path(get_point(snapped_start_position), get_point(snapped_end_position))
 	set_obstacles_points_disabled(false)
 	set_unit_points_disabled(false)
-	return set_path_length(astar_path, max_distance)
+
+	var point_path = set_path_length(astar_path, max_distance)
+	point_path = center_path_nodes( point_path )
+	point_path = replace_path_ends( start_position, end_position, point_path)
+	return point_path
 
 func get_astar_path_avoiding_obstacles(start_position: Vector2, end_position: Vector2, max_distance := -1) -> Array:
-	start_position = snap_vector_to_grid( start_position )
-	end_position = snap_vector_to_grid( end_position )
+	var snapped_start_position = snap_vector_to_grid( start_position )
+	var snapped_end_position = snap_vector_to_grid( end_position )
 	set_obstacles_points_disabled(true)
-	var potential_path_points := astar.get_point_path(get_point(start_position), get_point(end_position))
+	var potential_path_points := astar.get_point_path(get_point(snapped_start_position), get_point(snapped_end_position))
 	set_obstacles_points_disabled(false)
 	var astar_path := stop_path_at_unit(potential_path_points)
-	return set_path_length(astar_path, max_distance)
+
+	var point_path = set_path_length(astar_path, max_distance)
+	point_path = center_path_nodes( point_path )
+	point_path = replace_path_ends( start_position, end_position, point_path)
+	return point_path
 
 func stop_path_at_unit(potential_path_points: Array) -> Array:
 	for i in range(1, potential_path_points.size()):
@@ -104,10 +126,14 @@ func stop_path_at_unit(potential_path_points: Array) -> Array:
 	return potential_path_points
 
 func get_astar_path(start_position: Vector2, end_position: Vector2, max_distance := -1) -> Array:
-	start_position = snap_vector_to_grid( start_position )
-	end_position = snap_vector_to_grid( end_position )
-	var astar_path := astar.get_point_path(get_point(start_position), get_point(end_position))
-	return set_path_length(astar_path, max_distance)
+	var snapped_start_position = snap_vector_to_grid( start_position )
+	var snapped_end_position = snap_vector_to_grid( end_position )
+	var astar_path := astar.get_point_path(get_point(snapped_start_position), get_point(snapped_end_position))
+
+	var point_path = set_path_length(astar_path, max_distance)
+	point_path = center_path_nodes( point_path )
+	point_path = replace_path_ends( start_position, end_position, point_path)
+	return point_path
 
 func set_path_length(point_path: Array, max_distance: int) -> Array:
 	if max_distance < 0: return point_path
@@ -123,7 +149,7 @@ func set_unit_points_disabled(value: bool, exception_units: Array = []) -> void:
 	for unit in units:
 		if unit in exception_units or unit.owner in exception_units:
 			continue
-		astar.set_point_disabled(get_point(unit.global_position), value)
+		astar.set_point_disabled(get_point( snap_vector_to_grid( unit.global_position ) ), value)
 
 func get_floodfill_positions(start_position: Vector2, min_range: int, max_range: int, skip_obstacles := true, skip_units := true, return_center := false) -> Array:
 	start_position = snap_vector_to_grid( start_position )

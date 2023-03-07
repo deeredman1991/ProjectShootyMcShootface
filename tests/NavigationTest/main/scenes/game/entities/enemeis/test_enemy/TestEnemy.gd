@@ -55,7 +55,7 @@ func _physics_process(_delta: float) -> void:
 	
 	var start_position: Vector2 = get_global_transform().origin
 	var end_position: Vector2 = GameManager.player.get_global_transform().origin
-	var exception_units := [self, GameManager.player]
+	var exception_units := [ GameManager.player ]
 
 	path = GameManager.tilemap.get_astar_path_avoiding_obstacles_and_units(start_position, end_position, exception_units)
 	
@@ -68,13 +68,11 @@ func _physics_process(_delta: float) -> void:
 		if GameManager.player:
 			var direction_vector
 			if path.size() > 1:
-				direction_vector = ( ( path[1] + (OptionsManager.tile_size / 2) ) - ( global_position ) )
+				direction_vector = ( ( path[1] ) - ( global_position ) )
 			else:
 				direction_vector = Vector2.ZERO
 
 			if direction_vector.length() < follow_distance:
-				
-
 				return
 
 			velocity = move_and_slide( direction_vector.normalized() * speed )
