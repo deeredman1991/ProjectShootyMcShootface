@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "TileMap",
+"class": "AstarTileMap",
+"language": "GDScript",
+"path": "res://main/scenes/game/TileMap.gd"
+} ]
+_global_script_class_icons={
+"AstarTileMap": ""
+}
+
 [application]
 
 config/name="ProjectShootyMcShootface"
@@ -100,6 +110,11 @@ JP_move_up={
 JP_move_down={
 "deadzone": 0.5,
 "events": [ Object(InputEventJoypadMotion,"resource_local_to_scene":false,"resource_name":"","device":0,"axis":1,"axis_value":1.0,"script":null)
+ ]
+}
+shoot={
+"deadzone": 0.5,
+"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"pressed":false,"doubleclick":false,"script":null)
  ]
 }
 

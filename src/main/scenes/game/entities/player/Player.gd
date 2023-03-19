@@ -1,6 +1,5 @@
 extends KinematicBody2D
 
-
 var acceleration = 300
 var max_speed = 100
 var friction = 300
@@ -10,6 +9,9 @@ var velocity = Vector2.ZERO
 var flying := false setget set_flying, get_flying
 
 var current_room = null
+
+export var projectile: PackedScene
+export var global_cooldown := 0.35
 
 func set_flying(value: bool) -> void:
 	set_collision_layer_bit( GameManager.COLLISION_LAYERS.Flying, value )
@@ -27,6 +29,8 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_handle_movement(delta)
+	_handle_arm_rotation()
+	_handle_shooting()
 
 func _get_input_vector() -> Vector2:
 	var input_vector = Vector2.ZERO
@@ -59,6 +63,19 @@ func _handle_movement(delta: float) -> void:
 
 	velocity = move_and_slide( velocity )
 
+func _handle_arm_rotation():
+	$Pivot.look_at( get_global_mouse_position() )
+
+func _handle_shooting():
+	if Input.is_action_pressed("shoot") and $GlobalCooldownTimer.is_stopped():
+		var bullet: KinematicBody2D = projectile.instance()
+		bullet.position = $Pivot/BulletSpawner.get_global_position()
+		
+		bullet.direction_vector = ( get_global_mouse_position() - bullet.position ).normalized()
+
+		GameManager.Game.add_child(bullet)
+		$GlobalCooldownTimer.start(global_cooldown)
+
 func _on_RoomDetector_area_entered(area: Area2D) -> void:
 	# Gets collision shape and size of room
 	var collision_shape: CollisionShape2D = area.get_node("CollisionShape2D")
@@ -79,3 +96,5 @@ func _on_RoomDetector_area_entered(area: Area2D) -> void:
 	# Changes camera's current room and size. check camera script for more info
 	GameManager.player_camera.change_room( collision_shape.global_position, size, do_fade )
 	current_room = target_room
+
+

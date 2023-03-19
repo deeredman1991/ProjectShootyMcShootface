@@ -23,21 +23,25 @@ var level_sizes = [
 ]
 
 func generate_level( size ):
-	return LevelManager.generate_level( 
+	LevelManager.generate_level( 
 			level_sizes[size].level_min_size, 
 			level_sizes[size].level_max_size, 
 			level_sizes[size].minimum_number_of_dead_ends
 	)
 
-func build_rooms(level):
+func build_rooms():
+	var level = LevelManager.level
+	assert(level.size() > 0, "No rooms in level, did you mean to call 'generate_level'?")
+
 	for room_pos in level:
 		var room = level[room_pos]
 		room.build_room()
 		add_child(room)
 
-func _ready() -> void:
+func _enter_tree() -> void:
 	GameManager.Game = self
-	var level = generate_level( 0 )
-	build_rooms( level )
-		
 	
+func _ready() -> void:
+	generate_level( 0 )
+	build_rooms()
+	GameManager.tilemap.update()

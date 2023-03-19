@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://main/scenes/game/Game.gd" type="Script" id=1]
 [ext_resource path="res://main/scenes/game/entities/player/Player.tscn" type="PackedScene" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://assets/images/tiles/floors/floor0.png" type="Texture" id=7]
 [ext_resource path="res://assets/images/tiles/pits/pit0.png" type="Texture" id=8]
 [ext_resource path="res://main/scenes/game/entities/enemeis/test_enemy/TestEnemy.tscn" type="PackedScene" id=9]
+[ext_resource path="res://main/scenes/game/TileMap.gd" type="Script" id=10]
 
 [sub_resource type="ConvexPolygonShape2D" id=5]
 points = PoolVector2Array( 16, 16, 0, 16, 0, 0, 16, 0 )
@@ -201,11 +202,11 @@ cell_size = Vector2( 16, 16 )
 cell_y_sort = true
 format = 1
 tile_data = PoolIntArray( -65534, 0, 0, 2, 0, 0, 65538, 0, 0 )
+script = ExtResource( 10 )
+diagonals = true
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
-
-[node name="Enemy" parent="." instance=ExtResource( 9 )]
-position = Vector2( 56, 0 )
+position = Vector2( 8, 8 )
 
 [node name="PlayerCamera" type="Camera2D" parent="."]
 offset = Vector2( 8, 8 )
@@ -225,3 +226,6 @@ root_node = NodePath("../ColorRect")
 anims/RESET = SubResource( 1 )
 anims/fade_in = SubResource( 2 )
 anims/fade_out = SubResource( 3 )
+
+[node name="Enemy" parent="." instance=ExtResource( 9 )]
+position = Vector2( 64, 16 )
