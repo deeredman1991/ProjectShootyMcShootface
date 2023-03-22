@@ -24,6 +24,10 @@ config/name="ProjectShootyMcShootface"
 run/main_scene="res://main/Main.tscn"
 config/icon="res://icon.png"
 
+[audio]
+
+output_latency=0
+
 [autoload]
 
 SceneManager="*res://main/singletons/SceneManager.gd"
@@ -32,6 +36,7 @@ LevelManager="*res://main/singletons/LevelManager.gd"
 LevelGenerator="*res://main/singletons/LevelGenerator.gd"
 OptionsManager="*res://main/singletons/OptionsManager.gd"
 GameManager="*res://main/singletons/GameManager.gd"
+SoundManager="*res://main/singletons/SoundManager.gd"
 
 [display]
 

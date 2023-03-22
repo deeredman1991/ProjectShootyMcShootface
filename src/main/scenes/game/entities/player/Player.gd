@@ -75,6 +75,9 @@ func _handle_shooting():
 
 		GameManager.Game.add_child(bullet)
 		$GlobalCooldownTimer.start(global_cooldown)
+		
+		if SoundManager.conductor.is_on_beat():
+			bullet.get_node("ColorRect").modulate = Color(1, 0.5, 1)
 
 func _on_RoomDetector_area_entered(area: Area2D) -> void:
 	# Gets collision shape and size of room
@@ -96,5 +99,3 @@ func _on_RoomDetector_area_entered(area: Area2D) -> void:
 	# Changes camera's current room and size. check camera script for more info
 	GameManager.player_camera.change_room( collision_shape.global_position, size, do_fade )
 	current_room = target_room
-
-

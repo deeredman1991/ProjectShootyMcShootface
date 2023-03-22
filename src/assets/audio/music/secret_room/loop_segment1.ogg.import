@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/loop_segment1.ogg-1f7227d5be2f727d22649de738d41c03.oggstr"
+
+[deps]
+
+source_file="res://assets/audio/music/secret_room/loop_segment1.ogg"
+dest_files=[ "res://.import/loop_segment1.ogg-1f7227d5be2f727d22649de738d41c03.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

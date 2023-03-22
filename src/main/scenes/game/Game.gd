@@ -45,3 +45,5 @@ func _ready() -> void:
 	generate_level( 0 )
 	build_rooms()
 	GameManager.tilemap.update()
+	
+	SoundManager.start_beat()

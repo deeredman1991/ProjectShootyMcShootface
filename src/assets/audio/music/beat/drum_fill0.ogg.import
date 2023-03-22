@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/drum_fill0.ogg-974fcce66c252062335cac8a4120e1bb.oggstr"
+
+[deps]
+
+source_file="res://assets/audio/music/beat/drum_fill0.ogg"
+dest_files=[ "res://.import/drum_fill0.ogg-974fcce66c252062335cac8a4120e1bb.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=1.0
